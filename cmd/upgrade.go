@@ -24,8 +24,8 @@ import (
 	"k8s.io/cli-runtime/pkg/resource"
 	"sigs.k8s.io/yaml"
 
-	"github.com/databus23/helm-diff/v3/diff"
-	"github.com/databus23/helm-diff/v3/manifest"
+	"github.com/gustavobini/helm-diff/v3/diff"
+	"github.com/gustavobini/helm-diff/v3/manifest"
 )
 
 type diffCmd struct {
@@ -63,7 +63,7 @@ type diffCmd struct {
 func (d *diffCmd) isAllowUnreleased() bool {
 	// helm update --install is effectively the same as helm-diff's --allow-unreleased option,
 	// support both so that helm diff plugin can be applied on the same command
-	// https://github.com/databus23/helm-diff/issues/108
+	// https://github.com/gustavobini/helm-diff/issues/108
 	return d.allowUnreleased || d.install
 }
 
@@ -92,12 +92,12 @@ func newChartCommand() *cobra.Command {
 			"",
 			"  # Set HELM_DIFF_IGNORE_UNKNOWN_FLAGS=true to ignore unknown flags",
 			"  # It's useful when you're using `helm-diff` in a `helm upgrade` wrapper.",
-			"  # See https://github.com/databus23/helm-diff/issues/278 for more information.",
+			"  # See https://github.com/gustavobini/helm-diff/issues/278 for more information.",
 			"  HELM_DIFF_IGNORE_UNKNOWN_FLAGS=true helm diff upgrade my-release stable/postgres --wait",
 			"",
 			"  # Set HELM_DIFF_USE_UPGRADE_DRY_RUN=true to",
 			"  # use `helm upgrade --dry-run` instead of `helm template` to render manifests from the chart.",
-			"  # See https://github.com/databus23/helm-diff/issues/253 for more information.",
+			"  # See https://github.com/gustavobini/helm-diff/issues/253 for more information.",
 			"  HELM_DIFF_USE_UPGRADE_DRY_RUN=true helm diff upgrade my-release datadog/datadog",
 			"",
 			"  # Set HELM_DIFF_THREE_WAY_MERGE=true to",
@@ -124,7 +124,7 @@ func newChartCommand() *cobra.Command {
 			// Suppress the command usage on error. See #77 for more info
 			cmd.SilenceUsage = true
 
-			// See https://github.com/databus23/helm-diff/issues/253
+			// See https://github.com/gustavobini/helm-diff/issues/253
 			diff.useUpgradeDryRun = os.Getenv("HELM_DIFF_USE_UPGRADE_DRY_RUN") == "true"
 
 			if !diff.threeWayMerge && !cmd.Flags().Changed("three-way-merge") {
@@ -176,7 +176,7 @@ func newChartCommand() *cobra.Command {
 	f.BoolVar(&diff.detailedExitCode, "detailed-exitcode", false, "return a non-zero exit code when there are changes")
 	// See the below links for more context on when to use this flag
 	// - https://github.com/helm/helm/blob/d9ffe37d371c9d06448c55c852c800051830e49a/cmd/helm/template.go#L184
-	// - https://github.com/databus23/helm-diff/issues/318
+	// - https://github.com/gustavobini/helm-diff/issues/318
 	f.StringArrayVarP(&diff.extraAPIs, "api-versions", "a", []string{}, "Kubernetes api versions used for Capabilities.APIVersions")
 	// Support for kube-version was re-enabled and ported from helm2 to helm3 on https://github.com/helm/helm/pull/9040
 	f.StringVar(&diff.kubeVersion, "kube-version", "", "Kubernetes version used for Capabilities.KubeVersion")
@@ -490,7 +490,7 @@ func deleteStatusAndTidyMetadata(obj []byte) (map[string]interface{}, error) {
 	delete(metadata, "generation")
 
 	// See the below for the goal of this metadata tidy logic.
-	// https://github.com/databus23/helm-diff/issues/326#issuecomment-1008253274
+	// https://github.com/gustavobini/helm-diff/issues/326#issuecomment-1008253274
 	if a := metadata["annotations"]; a != nil {
 		annotations := a.(map[string]interface{})
 		delete(annotations, "meta.helm.sh/release-name")
